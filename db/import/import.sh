@@ -1,6 +1,5 @@
 set -euo pipefail
 
-# ----- Settings -----
 DB_NAME="Challenge4-Tattler"
 COLL="restaurants"
 
@@ -8,7 +7,6 @@ CSV_FILE="./db/import/restaurants.csv"
 JSON_FILE="./db/import/restaurant_sample.json"
 
 echo "==> [1/4] Importing JSON example into $DB_NAME.$COLL ..."
-# Note: JSON is a single document (NDJSON line). If you later switch to an array, add --jsonArray.
 mongoimport \
   --db "$DB_NAME" \
   --collection "$COLL" \
@@ -23,8 +21,6 @@ mongoimport \
   --file "$CSV_FILE"
 
 echo "==> [3/4] Shaping ONLY CSV rows (build nested address + [lon,lat]) ..."
-# Filter strictly to docs that have lon & lat (i.e., the CSV rows).
-# Use $convert with onError/onNull to avoid nulls; merge with any existing address.
 mongosh "$DB_NAME" --eval '
 db.getSiblingDB("'"$DB_NAME"'").'"$COLL"'.updateMany(
   { lon: { $exists: true }, lat: { $exists: true } },
