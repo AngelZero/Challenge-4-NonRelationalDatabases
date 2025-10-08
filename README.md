@@ -1,5 +1,17 @@
 ﻿# Challenge-4-NonRelationalDatabases
 
+ ## Project Description
+
+Tattler is a restaurant directory that will evolve into a **personalized, dynamic** experience.
+In **Sprint 1**, the focus is to **lay the data foundation**:
+
+* Initialize the **MongoDB** database and collection(s).
+* Provide **repeatable data import** from **CSV** (plus a small JSON example).
+* Create the **geospatial index** required for area-based queries used later.
+* Deliver a **portable backup (dump)** and **clear documentation** so anyone can reproduce the environment.
+
+---
+
 (Sprint 1: Database Foundation)
 
 A lightweight, reproducible database setup for the Tattler restaurant directory project.
@@ -116,18 +128,6 @@ This satisfies the “upload a database backup including collections and indexes
 
 ---
 
-## Project Description
-
-Tattler is a restaurant directory that will evolve into a **personalized, dynamic** experience.
-In **Sprint 1**, the focus is to **lay the data foundation**:
-
-* Initialize the **MongoDB** database and collection(s).
-* Provide **repeatable data import** from **CSV** (plus a small JSON example).
-* Create the **geospatial index** required for area-based queries used later.
-* Deliver a **portable backup (dump)** and **clear documentation** so anyone can reproduce the environment.
-
----
-
 ## How to Use This Repository (Sprint 1 workflow)
 
 1. **Clone** the repo.
@@ -179,5 +179,6 @@ mongodump --db Challenge4-Tattler --out ./db/backup/Challenge4-Tattler
 # Restore dump
 mongorestore --db Challenge4-Tattler ./db/backup/Challenge4-Tattler
 ```
+
 
 
