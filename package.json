@@ -1,0 +1,36 @@
+{
+  "name": "challenge-4-nonrelationaldatabases",
+  "version": "1.0.0",
+  "description": "(Sprint 1: Database Foundation)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
+  },
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AngelZero/Challenge-4-NonRelationalDatabases.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AngelZero/Challenge-4-NonRelationalDatabases/issues"
+  },
+  "homepage": "https://github.com/AngelZero/Challenge-4-NonRelationalDatabases#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mongoose": "^8.19.1",
+    "morgan": "^1.10.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
