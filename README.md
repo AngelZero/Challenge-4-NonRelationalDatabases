@@ -1,11 +1,11 @@
-﻿# Challenge-4-NonRelationalDatabases
+# Challenge-4-NonRelationalDatabases
 
 ## Project Description
 
 Tattler is a restaurant directory that will evolve into a **personalized, dynamic** experience.
 
-- **Sprint 1** delivered the **MongoDB foundation** (database + collection, CSV import script, geospatial index, BSON dump, and educational docs).
-- **Sprint 2** delivers a **REST API** with **Express.js + Mongoose** to manage restaurants and reviews (CRUD) and provides **tests in Postman** plus a lightweight **peer review** record.
+* **Sprint 1** delivered the **MongoDB foundation** (database + collection, CSV import script, geospatial index, BSON dump, and educational docs).
+* **Sprint 2** delivers a **REST API** with **Express.js + Mongoose** to manage restaurants and reviews (CRUD) and provides **tests in Postman** plus a lightweight **peer review** record.
 
 ---
 
@@ -13,14 +13,14 @@ Tattler is a restaurant directory that will evolve into a **personalized, dynami
 
 ### 1) Prerequisites
 
-- **Node.js (LTS)** and npm  
-- **MongoDB Database Tools** (`mongoimport`, `mongodump`, `mongorestore`)  
-- **MongoDB Shell** (`mongosh`) — used by the CSV import script  
+* **Node.js (LTS)** and npm
+* **MongoDB Database Tools** (`mongoimport`, `mongodump`, `mongorestore`)
+* **MongoDB Shell** (`mongosh`) — used by the CSV import script
   Install on Windows (PowerShell):
+
   ```powershell
   winget install MongoDB.Shell
-````
-
+  ```
 * (Optional) **MongoDB Compass** — visual DB inspection
 * (Optional) **Studio 3T** — used in Sprint 1 to generate a BSON dump
 * (Optional) **Postman** (for tests & docs) / **Insomnia** (alternative client)
@@ -36,7 +36,6 @@ mongorestore --version
 mongosh --version
 ```
 
-
 ---
 
 ### 2) Repository Structure
@@ -45,16 +44,16 @@ mongosh --version
 .
 ├─ db/
 │  ├─ backup/
-│  │  └─ Challenge4-Tattler/     # BSON dump (schema + data)
+│  │  └─ Challenge4-Tattler/       # BSON dump (schema + data)
 │  ├─ import/
-│  │  ├─ import.sh               # CSV import + shaping + 2dsphere index
-│  │  ├─ restaurants.csv         # Minimal seed CSV (flat columns)
-│  │  └─ restaurant_sample.json  # Single JSON sample row (NDJSON line)
-│  └─ screenshots/               # Proof: DB, collections, indexes, API tests
+│  │  ├─ import.sh                 # CSV import + shaping + 2dsphere index
+│  │  ├─ restaurants.csv           # Minimal seed CSV (flat columns)
+│  │  └─ restaurant_sample.json    # Single JSON sample row (NDJSON line)
+│  └─ screenshots/                 # Proof: DB, collections, indexes, API tests
 ├─ docs/
-│  ├─ peer-review.md             # Partial peer review (issues & fixes)
+│  ├─ peer-review.md               # Partial peer review (issues & fixes)
 │  └─ postman/
-│     └─ tattler-sprint2.postman_collection.json
+│     ├─ tattler-sprint2.postman_collection.json
 │     └─ tattler-sprint2.postman_doc.txt
 ├─ src/
 │  ├─ controllers/
@@ -69,12 +68,11 @@ mongosh --version
 │  │  └─ reviews.routes.js
 │  ├─ app.js
 │  └─ server.js
-├─ .env      # PORT, MONGODB_URI                    
+├─ .env                             # PORT, MONGODB_URI
 └─ README.md
 ```
 
 ---
-
 
 ## Sprint 1 — Database Foundation (recap)
 
@@ -84,13 +82,14 @@ mongosh --version
 bash ./db/import/import.sh
 ```
 
-What it does:
+**What it does**
 
-1. Imports `restaurant_sample.json` and `restaurants.csv` into `Challenge4-Tattler.restaurants`
-2. Shapes **only CSV rows** → builds `address{…}` and `address.coord: [lon, lat]` (numeric)
-3. Creates (or reuses) a **2dsphere** index on `address.coord`
+1. Imports `restaurant_sample.json` and `restaurants.csv` into `Challenge4-Tattler.restaurants`.
+2. Shapes **only CSV rows** → builds `address{…}` and `address.coord: [lon, lat]` (numeric).
+3. Creates (or reuses) a **2dsphere** index on `address.coord`.
 
-Verify in Compass (optional): DB `Challenge4-Tattler` → `restaurants` → **Indexes** tab.
+**Verify in Compass (optional)**
+DB `Challenge4-Tattler` → `restaurants` → **Indexes** tab.
 
 ### Backup & Restore (BSON dump)
 
@@ -115,8 +114,8 @@ mongorestore --db Challenge4-Tattler ./db/backup/Challenge4-Tattler
 From repo root:
 
 ```bash
-cp .env.example .env
-# If needed, edit .env:
+# If you have .env.example, copy it; otherwise create .env and set the vars.
+# Example:
 # PORT=3000
 # MONGODB_URI=mongodb://localhost:27017/Challenge4-Tattler
 ```
@@ -129,7 +128,7 @@ npm run dev
 # API -> http://localhost:3000
 ```
 
-If the server logs “MongoDB connected”, you’re set.
+If the server logs **“MongoDB connected”**, you’re set.
 
 ### 3) Endpoints (CRUD)
 
@@ -153,7 +152,7 @@ If the server logs “MongoDB connected”, you’re set.
 **Notes**
 
 * Validation returns **400** for bad input, **404** for missing ids, and appropriate success codes.
-* `restaurants.ratingSummary` (avg, count) is recomputed when reviews change.
+* `restaurants.ratingSummary` (**avg**, **count**) is recomputed when reviews change.
 
 ---
 
@@ -168,14 +167,16 @@ If the server logs “MongoDB connected”, you’re set.
    * Create a restaurant → stores `restaurantId`
    * CRUD reviews → stores `reviewId`
    * Update/delete and verify status codes
-   * Delete the restaurant and verify 404 afterwards
+   * Delete the restaurant and verify **404** afterwards
+
+> If you publish Postman documentation, capture screenshots and place them under `db/screenshots/`.
 
 ---
 
 ## Partial Peer Review (evidence)
 
-We include a short, mid-sprint **peer-review** at `docs/peer-review.md`.
-It records a checklist, issues found, and the fixes.
+We include a short, mid-sprint **peer review** at `docs/peer-review.md`.
+It records a checklist, issues found, and the fixes (with commit references).
 
 ---
 
@@ -220,7 +221,5 @@ git push origin main --tags
 * **MongoDB Database Tools** — `mongoimport`, `mongodump`, `mongorestore`
 * **Express.js + Mongoose** — REST API (Sprint 2)
 * **Postman** / **Insomnia** — tests and evidence
-
-````
 
 ---
