@@ -1,11 +1,17 @@
-# Challenge-4-NonRelationalDatabases
+﻿# Challenge-4-NonRelationalDatabases
 
-## Project Description
+(Sprint 1: Database Foundation)
 
-Tattler is a restaurant directory that will evolve into a **personalized, dynamic** experience.
+A lightweight, reproducible database setup for the Tattler restaurant directory project.
+This repository prepares the **MongoDB** foundation that later powers an **Express.js** REST API (Sprint 2) and search/area features (Sprint 3).
 
-* **Sprint 1** delivered the **MongoDB foundation** (database + collection, CSV import script, geospatial index, BSON dump, and educational docs).
-* **Sprint 2** delivers a **REST API** with **Express.js + Mongoose** to manage restaurants and reviews (CRUD) and provides **tests in Postman** plus a lightweight **peer review** record.
+**What you’ll find here (Sprint 1):**
+
+* A **MongoDB database** `Challenge4-Tattler` with the `restaurants` collection.
+* A **CSV import script** to load seed data and shape it into the expected structure.
+* A **2dsphere index** on `address.coord` (for geospatial queries later).
+* A **backup (dump)** of schema + data for quick restore.
+* **Screenshots** proving DB, collections, and index creation.
 
 ---
 
@@ -13,28 +19,24 @@ Tattler is a restaurant directory that will evolve into a **personalized, dynami
 
 ### 1) Prerequisites
 
-* **Node.js (LTS)** and npm
-* **MongoDB Database Tools** (`mongoimport`, `mongodump`, `mongorestore`)
-* **MongoDB Shell** (`mongosh`) — used by the CSV import script
+* **MongoDB Database Tools** (for `mongoimport`, `mongodump`, `mongorestore`)
+* **MongoDB Shell** (`mongosh`) — used by the import script
   Install on Windows (PowerShell):
 
   ```powershell
   winget install MongoDB.Shell
   ```
-* (Optional) **MongoDB Compass** — visual DB inspection
-* (Optional) **Studio 3T** — used in Sprint 1 to generate a BSON dump
-* (Optional) **Postman** (for tests & docs) / **Insomnia** (alternative client)
+* (Optional) **MongoDB Compass** — to visually inspect DB/collections/indexes
+* (Optional) **Studio 3T** — used here to generate a BSON dump
 
-Quick checks:
-
-```bash
-node -v
-npm -v
-mongoimport --version
-mongodump --version
-mongorestore --version
-mongosh --version
-```
+> Quick checks:
+>
+> ```bash
+> mongoimport --version
+> mongodump --version
+> mongorestore --version
+> mongosh --version
+> ```
 
 ---
 
@@ -44,149 +46,111 @@ mongosh --version
 .
 ├─ db/
 │  ├─ backup/
-│  │  └─ Challenge4-Tattler/       # BSON dump (schema + data)
+│  │  └─ Challenge4-Tattler/                # BSON dump (schema + data) generated in Sprint 1
 │  ├─ import/
-│  │  ├─ import.sh                 # CSV import + shaping + 2dsphere index
-│  │  ├─ restaurants.csv           # Minimal seed CSV (flat columns)
-│  │  └─ restaurant_sample.json    # Single JSON sample row (NDJSON line)
-│  └─ screenshots/                 # Proof: DB, collections, indexes, API tests
+│  │  ├─ import.sh            # CSV import + shaping + index creation
+│  │  ├─ restaurants.csv      # Minimal seed CSV (flat columns)
+│  │  └─ restaurant_sample.json  # Single JSON sample row (NDJSON line)
+│  └─ screenshots/            # Proof: DB, collections, indexes
 ├─ docs/
-│  ├─ peer-review.md               # Partial peer review (issues & fixes)
-│  └─ postman/
-│     ├─ tattler-sprint2.postman_collection.json
-│     └─ tattler-sprint2.postman_doc.txt
-├─ src/
-│  ├─ controllers/
-│  │  ├─ restaurants.controller.js
-│  │  └─ reviews.controller.js
-│  ├─ models/
-│  │  ├─ restaurant.model.js
-│  │  └─ review.model.js
-│  ├─ routes/
-│  │  ├─ restaurants.routes.js
-│  │  ├─ restaurant-reviews.routes.js
-│  │  └─ reviews.routes.js
-│  ├─ app.js
-│  └─ server.js
-├─ .env                             # PORT, MONGODB_URI
 └─ README.md
 ```
 
 ---
 
-## Sprint 1 — Database Foundation (recap)
+### 3) Load seed data (CSV + JSON) — **one command**
 
-### Load seed data (CSV + JSON) — one command
+From the repository root:
 
 ```bash
 bash ./db/import/import.sh
 ```
 
-**What it does**
+What the script does:
 
-1. Imports `restaurant_sample.json` and `restaurants.csv` into `Challenge4-Tattler.restaurants`.
-2. Shapes **only CSV rows** → builds `address{…}` and `address.coord: [lon, lat]` (numeric).
-3. Creates (or reuses) a **2dsphere** index on `address.coord`.
+1. Imports the **JSON sample** (`restaurant_sample.json`) into `Challenge4-Tattler.restaurants`.
+2. Imports **CSV rows** (`restaurants.csv`) into the same collection.
+3. **Shapes only CSV rows** into the expected structure:
 
-**Verify in Compass (optional)**
-DB `Challenge4-Tattler` → `restaurants` → **Indexes** tab.
+   * Builds `address` as an embedded object
+   * Builds `address.coord: [lon, lat]` (numeric)
+   * Cleans up flat CSV columns
+4. Creates (or reuses) a **2dsphere index** on `address.coord`.
 
-### Backup & Restore (BSON dump)
+> The script is safe/idempotent for the index and won’t overwrite the JSON example’s coordinates.
 
-Create:
+---
+
+### 4) Verify in Compass (optional but recommended)
+
+Open **MongoDB Compass** and check:
+
+* Database: `Challenge4-Tattler`
+* Collection: `restaurants`
+* **Indexes** tab: a **2dsphere** index on `address.coord`
+* Documents: `address` is embedded; `address.coord` is `[longitude, latitude]`
+
+Take screenshots and save them under `db/screenshots/`.
+
+---
+
+### 5) Backup & Restore (BSON dump)
+
+A BSON **dump (schema + data)** is included at `db/backup/Challenge4-Tattler/` (generated during Sprint 1 with Studio 3T).
+You can also regenerate it locally with `mongodump`:
+
+**Create dump (optional):**
 
 ```bash
 mongodump --db Challenge4-Tattler --out ./db/backup/Challenge4-Tattler
 ```
 
-Restore:
+**Restore:**
 
 ```bash
 mongorestore --db Challenge4-Tattler ./db/backup/Challenge4-Tattler
 ```
 
----
-
-## Sprint 2 — REST API (Express.js + Mongoose)
-
-### 1) Configure environment
-
-From repo root:
-
-```bash
-# If you have .env.example, copy it; otherwise create .env and set the vars.
-# Example:
-# PORT=3000
-# MONGODB_URI=mongodb://localhost:27017/Challenge4-Tattler
-```
-
-### 2) Install & run
-
-```bash
-npm install
-npm run dev
-# API -> http://localhost:3000
-```
-
-If the server logs **“MongoDB connected”**, you’re set.
-
-### 3) Endpoints (CRUD)
-
-**Restaurants**
-
-* `POST /restaurants` — create
-* `GET /restaurants` — list (page, limit)
-* `GET /restaurants/:id` — read one
-* `PATCH /restaurants/:id` — update (partial)
-* `PUT /restaurants/:id` — update (full)
-* `DELETE /restaurants/:id` — delete
-
-**Reviews**
-
-* `POST /restaurants/:id/reviews` — create review for a restaurant
-* `GET /restaurants/:id/reviews` — list reviews for a restaurant
-* `PATCH /reviews/:reviewId` — update review
-* `PUT /reviews/:reviewId` — update review (full)
-* `DELETE /reviews/:reviewId` — delete review
-
-**Notes**
-
-* Validation returns **400** for bad input, **404** for missing ids, and appropriate success codes.
-* `restaurants.ratingSummary` (**avg**, **count**) is recomputed when reviews change.
+This satisfies the “upload a database backup including collections and indexes” requirement.
+(Indexes present at dump time are recreated by `mongorestore`.)
 
 ---
 
-## Tests & Documentation
+## Project Description
 
-### Postman (recommended for nice docs)
+Tattler is a restaurant directory that will evolve into a **personalized, dynamic** experience.
+In **Sprint 1**, the focus is to **lay the data foundation**:
 
-1. Import: `docs/postman/tattler-sprint2.postman_collection.json`
-2. Set `baseUrl` = `http://localhost:3000`
-3. Run the collection. It will:
-
-   * Create a restaurant → stores `restaurantId`
-   * CRUD reviews → stores `reviewId`
-   * Update/delete and verify status codes
-   * Delete the restaurant and verify **404** afterwards
-
-> If you publish Postman documentation, capture screenshots and place them under `db/screenshots/`.
+* Initialize the **MongoDB** database and collection(s).
+* Provide **repeatable data import** from **CSV** (plus a small JSON example).
+* Create the **geospatial index** required for area-based queries used later.
+* Deliver a **portable backup (dump)** and **clear documentation** so anyone can reproduce the environment.
 
 ---
 
-## Partial Peer Review (evidence)
+## How to Use This Repository (Sprint 1 workflow)
 
-We include a short, mid-sprint **peer review** at `docs/peer-review.md`.
-It records a checklist, issues found, and the fixes (with commit references).
+1. **Clone** the repo.
+2. **Install prerequisites** (see above). Ensure `mongoimport`, `mongosh`, `mongodump`, `mongorestore` are available.
+3. Run:
+
+   ```bash
+   bash ./db/import/import.sh
+   ```
+4. (Optional) Open **Compass** to explore data and confirm the **2dsphere** index.
+5. Use `mongodump`/`mongorestore` if you want to regenerate/verify the backup.
+6. Review `db/screenshots/` and `docs/master.md` for process evidence and notes.
 
 ---
 
 ## Why a 2dsphere Index (educational note)
 
-* An **index** lets MongoDB answer queries without scanning all documents.
-* **2dsphere** indexes understand Earth geometry for area-based queries.
-* We index **`address.coord`** (legacy `[lon, lat]`) to support Sprint 3 features.
+* An **index** lets MongoDB find data efficiently without scanning every document.
+* A **2dsphere** index specifically understands geographic coordinates on a sphere (Earth).
+  It’s required for efficient queries like “restaurants **within** a given area.”
+* We index **`address.coord`** (which stores `[longitude, latitude]`) to support Sprint 3’s geospatial features.
 
-Reference:
+Command (already handled by the script, shown for reference):
 
 ```js
 db.restaurants.createIndex({ "address.coord": "2dsphere" })
@@ -194,32 +158,26 @@ db.restaurants.createIndex({ "address.coord": "2dsphere" })
 
 ---
 
-## Versioning
+## Acknowledgements / Tools Used
 
-We use **X.Y.Z**:
+* **MongoDB Compass** — visual database management
+* **Studio 3T** — BSON dump (schema + data)
+* **MongoDB Shell (mongosh)** — used inside the import script for post-import shaping & index creation
+* **MongoDB Database Tools** — `mongoimport`, `mongodump`, `mongorestore`
 
-* **X (Major):** breaking or significant changes
-* **Y (New Features):** features added
-* **Z (Revisions):** fixes/patches
+---
 
-Example tag after completing Sprint 2:
+### Common Commands (reference)
 
 ```bash
-git add -A
-git commit -m "feat(api): Sprint 2 REST API with restaurants & reviews CRUD (2.0.0)"
-git tag -a v2.0.0 -m "Sprint 2 complete"
-git push origin main --tags
+# Import CSV + JSON, shape docs, create index
+bash ./db/import/import.sh
+
+# Create dump (schema + data)
+mongodump --db Challenge4-Tattler --out ./db/backup/Challenge4-Tattler
+
+# Restore dump
+mongorestore --db Challenge4-Tattler ./db/backup/Challenge4-Tattler
 ```
 
----
 
-## Tools Used
-
-* **MongoDB Compass** — visual DB management
-* **Studio 3T** — BSON dump (schema + data)
-* **MongoDB Shell (mongosh)** — used by CSV import script
-* **MongoDB Database Tools** — `mongoimport`, `mongodump`, `mongorestore`
-* **Express.js + Mongoose** — REST API (Sprint 2)
-* **Postman** / **Insomnia** — tests and evidence
-
----
