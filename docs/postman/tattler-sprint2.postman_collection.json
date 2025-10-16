@@ -1,0 +1,196 @@
+{
+  "info": {
+    "name": "Tattler Sprint 2",
+    "_postman_id": "f6b0c9c4-0c15-4e6f-9ad0-aaaa00000111",
+    "description": "CRUD for restaurants and reviews (Sprint 2). Creates a restaurant, manipulates reviews, validates status codes, and stores ids as variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Restaurant",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/restaurants",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Brunos On The Boulevard\",\n  \"borough\": \"Queens\",\n  \"cuisine\": \"American\",\n  \"address\": {\n    \"building\": \"8825\",\n    \"street\": \"Astoria Boulevard\",\n    \"zipcode\": \"11369\",\n    \"coord\": [-73.8803827, 40.7643124]\n  }\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+              "const json = pm.response.json();",
+              "pm.expect(json).to.have.property('_id');",
+              "pm.collectionVariables.set('restaurantId', json._id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Restaurant by Id",
+      "request": { "method": "GET", "url": "{{baseUrl}}/restaurants/{{restaurantId}}" },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+              "const json = pm.response.json();",
+              "pm.expect(json).to.have.property('_id', pm.collectionVariables.get('restaurantId'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Update Restaurant (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/restaurants/{{restaurantId}}",
+        "body": { "mode": "raw", "raw": "{ \"cuisine\": \"Italian\" }" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+              "pm.expect(pm.response.json()).to.have.property('cuisine', 'Italian');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "List Restaurants (page=1,limit=5)",
+      "request": { "method": "GET", "url": "{{baseUrl}}/restaurants?page=1&limit=5" },
+      "event": [
+        {
+          "listen": "test",
+          "script": { "exec": [ "pm.test('200 OK', function(){ pm.response.to.have.status(200); });" ], "type": "text/javascript" }
+        }
+      ]
+    },
+    {
+      "name": "Create Review",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/restaurants/{{restaurantId}}/reviews",
+        "body": { "mode": "raw", "raw": "{ \"rating\": 5, \"comment\": \"Great food!\" }" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+              "const json = pm.response.json();",
+              "pm.expect(json).to.have.property('_id');",
+              "pm.collectionVariables.set('reviewId', json._id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "List Reviews for Restaurant",
+      "request": { "method": "GET", "url": "{{baseUrl}}/restaurants/{{restaurantId}}/reviews" },
+      "event": [
+        {
+          "listen": "test",
+          "script": { "exec": [ "pm.test('200 OK', function(){ pm.response.to.have.status(200); });" ], "type": "text/javascript" }
+        }
+      ]
+    },
+    {
+      "name": "Update Review",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/reviews/{{reviewId}}",
+        "body": { "mode": "raw", "raw": "{ \"rating\": 4, \"comment\": \"Good, a bit salty.\" }" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": { "exec": [ "pm.test('200 OK', function(){ pm.response.to.have.status(200); });" ], "type": "text/javascript" }
+        }
+      ]
+    },
+    {
+      "name": "Delete Review",
+      "request": { "method": "DELETE", "url": "{{baseUrl}}/reviews/{{reviewId}}" },
+      "event": [
+        {
+          "listen": "test",
+          "script": { "exec": [ "pm.test('204 No Content', function(){ pm.response.to.have.status(204); });" ], "type": "text/javascript" }
+        }
+      ]
+    },
+    {
+      "name": "Get Restaurant (after reviews)",
+      "request": { "method": "GET", "url": "{{baseUrl}}/restaurants/{{restaurantId}}" },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('200 OK', function(){ pm.response.to.have.status(200); });",
+              "pm.expect(pm.response.json()).to.have.property('ratingSummary');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete Restaurant",
+      "request": { "method": "DELETE", "url": "{{baseUrl}}/restaurants/{{restaurantId}}" },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('204 No Content', function(){ pm.response.to.have.status(204); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Restaurant by Id (after delete) — expect 404",
+      "request": { "method": "GET", "url": "{{baseUrl}}/restaurants/{{restaurantId}}" },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('404 Not Found after delete', function(){ pm.response.to.have.status(404); });",
+              "// Optional: clear ids now that the entity is gone",
+              "pm.collectionVariables.unset('restaurantId');",
+              "pm.collectionVariables.unset('reviewId');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "restaurantId", "value": "" },
+    { "key": "reviewId", "value": "" }
+  ]
+}
