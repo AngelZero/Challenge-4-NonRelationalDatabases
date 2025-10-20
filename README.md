@@ -202,14 +202,6 @@ We use **X.Y.Z**:
 * **Y (New Features):** features added
 * **Z (Revisions):** fixes/patches
 
-Example tag after completing Sprint 2:
-
-```bash
-git add -A
-git commit -m "feat(api): Sprint 2 REST API with restaurants & reviews CRUD (2.0.0)"
-git tag -a v2.0.0 -m "Sprint 2 complete"
-git push origin main --tags
-```
 
 ---
 
@@ -223,3 +215,4 @@ git push origin main --tags
 * **Postman** / **Insomnia** — tests and evidence
 
 ---
+
