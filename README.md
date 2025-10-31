@@ -1,4 +1,4 @@
-# Challenge-4-NonRelationalDatabases
+﻿# Challenge-4-NonRelationalDatabases
 
 ## Project Description
 
@@ -47,6 +47,7 @@ mongosh --version
 │  │  └─ Challenge4-Tattler/       # BSON dump (schema + data)
 │  ├─ import/
 │  │  ├─ import.sh                 # CSV import + shaping + 2dsphere index
+│  │  ├─ neighborhoods_sample.json.sh 
 │  │  ├─ restaurants.csv           # Minimal seed CSV (flat columns)
 │  │  └─ restaurant_sample.json    # Single JSON sample row (NDJSON line)
 │  └─ screenshots/                 # Proof: DB, collections, indexes, API tests
@@ -54,6 +55,7 @@ mongosh --version
 │  ├─ peer-review.md               # Partial peer review (issues & fixes)
 │  └─ postman/
 │     ├─ tattler-sprint2.postman_collection.json
+│     ├─ tattler-sprint3.postman_collection.json
 │     └─ tattler-sprint2.postman_doc.txt
 ├─ src/
 │  ├─ controllers/
@@ -61,6 +63,7 @@ mongosh --version
 │  │  └─ reviews.controller.js
 │  ├─ models/
 │  │  ├─ restaurant.model.js
+│  │  ├─ neighborhood.model.js
 │  │  └─ review.model.js
 │  ├─ routes/
 │  │  ├─ restaurants.routes.js
@@ -156,11 +159,25 @@ If the server logs **“MongoDB connected”**, you’re set.
 
 ---
 
+## Sprint 3 — Search, Sorting, and Area Features
+
+### Endpoints
+- `GET /restaurants/search?name=&borough=&cuisine=&zipcode=&minRating=&maxRating=&sort=&order=&page=&limit=`
+  - `sort`: `name|cuisine|createdAt|rating`; `order`: `asc|desc`
+- `GET /restaurants/within?neighborhood=Bedford`
+  - Uses `neighborhoods.geometry.coordinates` and wraps them as `type: "Polygon"` for `$geoWithin`.
+- `POST /restaurants/within`
+  - Body: `{ "coordinates": [[[lon,lat], ...]] }`
+- `GET /restaurants/near?lng=&lat=&maxDistanceMeters=&limit=`
+  - Distance-sorted using `$geoNear` (requires the 2dsphere index on `restaurants.address.coord`, already present).
+
+---
+
 ## Tests & Documentation
 
-### Postman (recommended for nice docs)
+### Postman
 
-1. Import: `docs/postman/tattler-sprint2.postman_collection.json`
+1. Import: `docs/postman/tattler-sprint2.postman_collection.json` and `docs/postman/tattler-sprint3.postman_collection.json` 
 2. Set `baseUrl` = `http://localhost:3000`
 3. Run the collection. It will:
 
@@ -168,8 +185,6 @@ If the server logs **“MongoDB connected”**, you’re set.
    * CRUD reviews → stores `reviewId`
    * Update/delete and verify status codes
    * Delete the restaurant and verify **404** afterwards
-
-> If you publish Postman documentation, capture screenshots and place them under `db/screenshots/`.
 
 ---
 
