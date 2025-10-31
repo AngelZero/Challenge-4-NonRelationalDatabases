@@ -47,6 +47,7 @@ mongosh --version
 │  │  └─ Challenge4-Tattler/       # BSON dump (schema + data)
 │  ├─ import/
 │  │  ├─ import.sh                 # CSV import + shaping + 2dsphere index
+│  │  ├─ neighborhoods_sample.json.sh 
 │  │  ├─ restaurants.csv           # Minimal seed CSV (flat columns)
 │  │  └─ restaurant_sample.json    # Single JSON sample row (NDJSON line)
 │  └─ screenshots/                 # Proof: DB, collections, indexes, API tests
@@ -54,6 +55,7 @@ mongosh --version
 │  ├─ peer-review.md               # Partial peer review (issues & fixes)
 │  └─ postman/
 │     ├─ tattler-sprint2.postman_collection.json
+│     ├─ tattler-sprint3.postman_collection.json
 │     └─ tattler-sprint2.postman_doc.txt
 ├─ src/
 │  ├─ controllers/
@@ -61,6 +63,7 @@ mongosh --version
 │  │  └─ reviews.controller.js
 │  ├─ models/
 │  │  ├─ restaurant.model.js
+│  │  ├─ neighborhood.model.js
 │  │  └─ review.model.js
 │  ├─ routes/
 │  │  ├─ restaurants.routes.js
