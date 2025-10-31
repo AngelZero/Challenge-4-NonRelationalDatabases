@@ -1,0 +1,40 @@
+{
+  "info": {
+    "name": "Tattler Sprint 3",
+    "_postman_id": "c0ffee00-0000-4000-9000-abcdef123456",
+    "description": "Search, sorting, within (polygon) and near (distance).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Search: cuisine=Mexican, sort=rating desc",
+      "request": { "method": "GET", "url": "{{baseUrl}}/restaurants/search?cuisine=Mexican&sort=rating&order=desc&page=1&limit=5" }
+    },
+    {
+      "name": "Within neighborhood: Bedford",
+      "request": { "method": "GET", "url": "{{baseUrl}}/restaurants/within?neighborhood=Bedford" }
+    },
+    {
+      "name": "Within polygon (POST)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/restaurants/within",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"coordinates\": [[[ -73.94193078816193, 40.70072523469547 ], [ -73.9443878859649, 40.70042452378256 ], [ -73.94424286147482, 40.69969927964773 ], [ -73.94409591260093, 40.69897295461309 ], [ -73.94394947271304, 40.69822127983908 ], [ -73.94193078816193, 40.70072523469547 ] ]] }"
+        }
+      }
+    },
+    {
+      "name": "Near point (2km)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/restaurants/near?lng=-73.98&lat=40.70&maxDistanceMeters=2000&limit=10"
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" }
+  ]
+}
